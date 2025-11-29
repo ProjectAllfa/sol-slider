@@ -48,4 +48,5 @@ build/
 
 # Krita autosave files
 *.kra-autosave
+*.png-autosave.kra
 
