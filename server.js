@@ -41,26 +41,25 @@ app.use(session({
 // Connect to MongoDB (with better error handling)
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-    console.warn('[Server] MONGO_URI not found in environment variables - user data features will be disabled');
-} else {
+    console.warn("[Server] MONGO_URI not found in environment variables - user data features will be disabled");
+  } else {
     mongoose.connect(MONGO_URI, {
-        serverSelectionTimeoutMS: 10000, // Timeout after 10s
-        socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      serverSelectionTimeoutMS: 10000, // Timeout after 10s
+      socketTimeoutMS: 45000,           // Close sockets after 45s of inactivity
     })
     .then(() => {
-        console.log('[Server] Connected to MongoDB');
+      console.log("[Server] ✅ Connected to MongoDB");
     })
     .catch((err) => {
-        console.error('[Server] MongoDB connection error:', err.message);
-        console.warn('[Server] Continuing without MongoDB - user data features will be disabled');
+      console.error("[Server] ❌ MongoDB connection error:", err.message);
+      console.warn("[Server] Continuing without MongoDB - user data features will be disabled");
     });
-}
-
-// Check if MongoDB is connected before using it
-const isMongoConnected = () => {
-    return mongoose.connection.readyState === 1;
-};
-
+  }
+  
+  // Helper to check connection before using DB features
+  const isMongoConnected = () => mongoose.connection.readyState === 1;
+  
+  module.exports = { isMongoConnected };
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
