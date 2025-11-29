@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ice Slider Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            overflow: visible !important;
+        }
+
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            font-size: 22px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+        }
+
+        .admin-form-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .admin-form-box h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-section h3 {
+            color: #afd3eb;
+            margin-bottom: 12px;
+            font-size: 16px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #afd3eb;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group small {
+            display: block;
+            color: #888888;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        #save-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #00ffff 0%, #0080ff 100%);
+            color: #000000;
+        }
+
+        #save-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+        }
+
+        #save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-error {
+            display: none;
+            color: #ff4444;
+            background-color: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .form-success {
+            display: none;
+            color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .token-stats {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            min-width: 280px;
+            z-index: 9999;
+            display: block;
+            visibility: visible;
+        }
+
+        .token-stats h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #afd3eb;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+
+        .reset-stats-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: #ffffff;
+        }
+
+        .reset-stats-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .reset-stats-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Token Statistics Panel -->
+    <div class="token-stats">
+        <h3>Token Statistics</h3>
+        <div class="stat-item">
+            <span class="stat-label">Bought:</span>
+            <span class="stat-value" id="stat-bought">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Burned:</span>
+            <span class="stat-value" id="stat-burned">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Sent:</span>
+            <span class="stat-value" id="stat-sent">0</span>
+        </div>
+        <button class="reset-stats-btn" id="reset-stats-btn">Reset Statistics</button>
+    </div>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Panel</h1>
+            <button class="logout-btn" id="logout-btn">Logout</button>
+        </div>
+
+        <div class="admin-form-box">
+            <h2>Configuration</h2>
+            <form id="admin-config-form">
+                <div class="form-error" id="form-error"></div>
+                <div class="form-success" id="form-success"></div>
+
+                <div class="form-section">
+                    <h3>Dev Wallet</h3>
+                    <div class="form-group">
+                        <label for="devWalletPublic">Dev Wallet Public Key</label>
+                        <input 
+                            type="text" 
+                            id="devWalletPublic" 
+                            name="devWalletPublic" 
+                            placeholder="Enter dev wallet public key"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="devWalletPrivate">Dev Wallet Private Key</label>
+                        <input 
+                            type="password" 
+                            id="devWalletPrivate" 
+                            name="devWalletPrivate" 
+                            placeholder="Enter dev wallet private key (encrypted when saved)"
+                        />
+                        <small>Private key will be encrypted before storage</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Pot Wallet</h3>
+                    <div class="form-group">
+                        <label for="potWalletPublic">Pot Wallet Public Key</label>
+                        <input 
+                            type="text" 
+                            id="potWalletPublic" 
+                            name="potWalletPublic" 
+                            placeholder="Enter pot wallet public key"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="potWalletPrivate">Pot Wallet Private Key</label>
+                        <input 
+                            type="password" 
+                            id="potWalletPrivate" 
+                            name="potWalletPrivate" 
+                            placeholder="Enter pot wallet private key (encrypted when saved)"
+                        />
+                        <small>Private key will be encrypted before storage</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Token Configuration</h3>
+                    <div class="form-group">
+                        <label for="tokenContractAddress">Token Contract Address (CA)</label>
+                        <input 
+                            type="text" 
+                            id="tokenContractAddress" 
+                            name="tokenContractAddress" 
+                            placeholder="Enter token contract address"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="tokenTicker">Token Ticker</label>
+                        <input 
+                            type="text" 
+                            id="tokenTicker" 
+                            name="tokenTicker" 
+                            placeholder="e.g., $SLIDE"
+                            maxlength="20"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Social Links</h3>
+                    <div class="form-group">
+                        <label for="xLink">X (Twitter) Link</label>
+                        <input 
+                            type="url" 
+                            id="xLink" 
+                            name="xLink" 
+                            placeholder="https://x.com/yourhandle"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="pumpfunLink">PumpFun Link</label>
+                        <input 
+                            type="url" 
+                            id="pumpfunLink" 
+                            name="pumpfunLink" 
+                            placeholder="https://pump.fun/your-token"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Token Statistics</h3>
+                    <div class="form-group">
+                        <button type="button" class="reset-stats-btn" id="reset-stats-btn-form" style="margin-top: 0;">
+                            Reset Token Statistics
+                        </button>
+                        <small>This will reset all token statistics to 0. Use this when changing tokens.</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Leaderboard</h3>
+                    <div class="form-group">
+                        <button type="button" class="reset-stats-btn" id="reset-leaderboard-btn" style="margin-top: 0;">
+                            Reset Leaderboard
+                        </button>
+                        <small>This will delete all player statistics from the database. Use this when changing tokens.</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Game Control</h3>
+                    <div class="form-group">
+                        <button type="button" class="reset-stats-btn" id="game-pause-btn" style="margin-top: 0; background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);">
+                            <span id="game-pause-btn-text">Pause Game</span>
+                        </button>
+                        <small id="game-pause-description">Pause the game to stop new rounds from starting. Use this when changing tokens.</small>
+                    </div>
+                </div>
+
+                <button type="submit" id="save-btn">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is authenticated
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/admin/check', {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    window.location.href = '/admin-login.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                window.location.href = '/admin-login.html';
+                return false;
+            }
+        }
+
+        // Load current configuration
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/admin/config', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    // Fill form with current values (don't show private keys)
+                    document.getElementById('devWalletPublic').value = data.devWalletPublic || '';
+                    document.getElementById('potWalletPublic').value = data.potWalletPublic || '';
+                    document.getElementById('tokenContractAddress').value = data.tokenContractAddress || '';
+                    document.getElementById('tokenTicker').value = data.tokenTicker || '$SLIDE';
+                    document.getElementById('xLink').value = data.xLink || '';
+                    document.getElementById('pumpfunLink').value = data.pumpfunLink || '';
+                    // Private keys are not returned for security
+                }
+            } catch (error) {
+                console.error('Error loading config:', error);
+            }
+        }
+
+        // Load token statistics
+        async function loadTokenStats() {
+            try {
+                const response = await fetch('/api/admin/token-stats', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('stat-bought').textContent = formatNumber(data.totalBoughtTokens || 0);
+                    document.getElementById('stat-burned').textContent = formatNumber(data.totalBurnedTokens || 0);
+                    document.getElementById('stat-sent').textContent = formatNumber(data.totalSentTokens || 0);
+                }
+            } catch (error) {
+                console.error('Error loading token stats:', error);
+            }
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            return Number(num).toLocaleString('en-US', {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 0
+            });
+        }
+
+        // Reset token statistics
+        async function resetTokenStats() {
+            if (!confirm('Are you sure you want to reset all token statistics to 0? This action cannot be undone.')) {
+                return;
+            }
+
+            const resetBtn = document.getElementById('reset-stats-btn');
+            const resetBtnForm = document.getElementById('reset-stats-btn-form');
+            
+            resetBtn.disabled = true;
+            resetBtnForm.disabled = true;
+            resetBtn.textContent = 'Resetting...';
+            resetBtnForm.textContent = 'Resetting...';
+
+            try {
+                const response = await fetch('/api/admin/token-stats/reset', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Update displayed stats
+                    document.getElementById('stat-bought').textContent = '0';
+                    document.getElementById('stat-burned').textContent = '0';
+                    document.getElementById('stat-sent').textContent = '0';
+                    
+                    // Show success message
+                    successDiv.textContent = 'Token statistics reset successfully!';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    const error = await response.json();
+                    errorDiv.textContent = error.error || 'Failed to reset token statistics';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Failed to connect to server. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                resetBtn.disabled = false;
+                resetBtnForm.disabled = false;
+                resetBtn.textContent = 'Reset Statistics';
+                resetBtnForm.textContent = 'Reset Token Statistics';
+            }
+        }
+
+        // Save configuration
+        const form = document.getElementById('admin-config-form');
+        const saveBtn = document.getElementById('save-btn');
+        const errorDiv = document.getElementById('form-error');
+        const successDiv = document.getElementById('form-success');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                devWalletPublic: document.getElementById('devWalletPublic').value.trim(),
+                devWalletPrivate: document.getElementById('devWalletPrivate').value.trim(),
+                potWalletPublic: document.getElementById('potWalletPublic').value.trim(),
+                potWalletPrivate: document.getElementById('potWalletPrivate').value.trim(),
+                tokenContractAddress: document.getElementById('tokenContractAddress').value.trim(),
+                tokenTicker: document.getElementById('tokenTicker').value.trim(),
+                xLink: document.getElementById('xLink').value.trim(),
+                pumpfunLink: document.getElementById('pumpfunLink').value.trim()
+            };
+
+            // Disable button and show loading
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/admin/config', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    successDiv.textContent = 'Configuration saved successfully!';
+                    successDiv.style.display = 'block';
+                    // Clear private key fields after saving
+                    document.getElementById('devWalletPrivate').value = '';
+                    document.getElementById('potWalletPrivate').value = '';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    const error = await response.json();
+                    errorDiv.textContent = error.error || 'Failed to save configuration';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Failed to connect to server. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Configuration';
+            }
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/admin/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/admin-login.html';
+            } catch (error) {
+                window.location.href = '/admin-login.html';
+            }
+        });
+
+        // Reset leaderboard
+        async function resetLeaderboard() {
+            if (!confirm('Are you sure you want to reset the leaderboard? This will delete ALL player statistics from the database. This action cannot be undone.')) {
+                return;
+            }
+
+            const resetBtn = document.getElementById('reset-leaderboard-btn');
+            
+            resetBtn.disabled = true;
+            resetBtn.textContent = 'Resetting...';
+
+            try {
+                const response = await fetch('/api/admin/leaderboard/reset', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Show success message
+                    successDiv.textContent = `Leaderboard reset successfully! Deleted ${data.deletedCount || 0} player records.`;
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    const error = await response.json();
+                    errorDiv.textContent = error.error || 'Failed to reset leaderboard';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Failed to connect to server. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                resetBtn.disabled = false;
+                resetBtn.textContent = 'Reset Leaderboard';
+            }
+        }
+
+        // Load game pause state
+        async function loadGamePauseState() {
+            try {
+                const response = await fetch('/api/admin/game-pause', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateGamePauseButton(data.gamePaused);
+                }
+            } catch (error) {
+                console.error('Error loading game pause state:', error);
+            }
+        }
+
+        // Update game pause button based on state
+        function updateGamePauseButton(isPaused) {
+            const pauseBtn = document.getElementById('game-pause-btn');
+            const pauseBtnText = document.getElementById('game-pause-btn-text');
+            const pauseDescription = document.getElementById('game-pause-description');
+            
+            if (isPaused) {
+                pauseBtnText.textContent = 'Resume Game';
+                pauseBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+                pauseDescription.textContent = 'Game is paused. Click to resume and start new rounds.';
+            } else {
+                pauseBtnText.textContent = 'Pause Game';
+                pauseBtn.style.background = 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)';
+                pauseDescription.textContent = 'Pause the game to stop new rounds from starting. Use this when changing tokens.';
+            }
+        }
+
+        // Toggle game pause state
+        async function toggleGamePause() {
+            const pauseBtn = document.getElementById('game-pause-btn');
+            const pauseBtnText = document.getElementById('game-pause-btn-text');
+            const currentState = pauseBtnText.textContent.includes('Resume');
+            const newState = !currentState;
+            
+            pauseBtn.disabled = true;
+            pauseBtnText.textContent = newState ? 'Pausing...' : 'Resuming...';
+
+            try {
+                const response = await fetch('/api/admin/game-pause', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ gamePaused: newState })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateGamePauseButton(data.gamePaused);
+                    
+                    // Show success message
+                    successDiv.textContent = data.message;
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    const error = await response.json();
+                    errorDiv.textContent = error.error || 'Failed to toggle game pause state';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Failed to connect to server. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                pauseBtn.disabled = false;
+            }
+        }
+
+        // Reset stats button handlers
+        document.getElementById('reset-stats-btn').addEventListener('click', resetTokenStats);
+        document.getElementById('reset-stats-btn-form').addEventListener('click', resetTokenStats);
+        document.getElementById('reset-leaderboard-btn').addEventListener('click', resetLeaderboard);
+        document.getElementById('game-pause-btn').addEventListener('click', toggleGamePause);
+
+        // Initialize
+        (async () => {
+            const isAuth = await checkAuth();
+            if (isAuth) {
+                await loadConfig();
+                await loadTokenStats();
+                await loadGamePauseState();
+                
+                // Refresh stats every 5 seconds
+                setInterval(loadTokenStats, 5000);
+            }
+        })();
+    </script>
+</body>
+</html>
+

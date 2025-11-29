@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sol Slider</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Token Statistics Panel -->
+    <div class="token-stats" id="token-stats">
+        <div class="token-stats-header">
+            <h3 id="stat-ticker">$SYMBOL</h3>
+            <div class="social-buttons">
+                <a href="#" id="social-x" target="_blank" rel="noopener noreferrer" class="social-btn" title="X (Twitter)">
+                    <img src="assets/socials/x.png" alt="X" />
+                </a>
+                <a href="#" id="social-pumpfun" target="_blank" rel="noopener noreferrer" class="social-btn" title="PumpFun">
+                    <img src="assets/socials/pumpfun.png" alt="PumpFun" />
+                </a>
+            </div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Bought:</span>
+            <span class="stat-value" id="stat-bought">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Burned:</span>
+            <span class="stat-value" id="stat-burned">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Sent:</span>
+            <span class="stat-value" id="stat-sent">0</span>
+        </div>
+        <div class="stat-ca">
+            <span class="stat-ca-label">CA:</span>
+            <span class="stat-ca-value" id="stat-ca">-</span>
+            <button class="copy-btn" id="copy-ca-btn" title="Copy Contract Address">Copy</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div class="leaderboard" id="leaderboard">
+        <h3>Leaderboard</h3>
+        <div id="leaderboard-list">
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">-</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-username">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+<!-- How Does It Work Panel -->
+<div class="how-it-works" id="how-it-works">
+    <h3>HOW DOES IT WORK?</h3>
+    <div class="steps-container">
+
+        <div class="step-item">
+            <span class="step-number">1.</span>
+            <span class="step-text">
+                The game runs continuous rounds, waiting for at least 2 players to join the queue before starting.
+            </span>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">2.</span>
+            <span class="step-text">
+                At the start of every round, creator fees from Pump.fun are claimed and sent to the pot wallet. 
+                The wallet then buys $SLIDE tokens using the pot amount, burns 5%, and adds the remaining tokens to the round’s prize pool.
+            </span>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">3.</span>
+            <span class="step-text">
+                Players battle for the pot, avoid falling off the map and survive until the round ends. 
+                Players that remain alive split the pot equally.
+            </span>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">4.</span>
+            <span class="step-text">
+                Slide with right-click, throw snowballs with left-click to freeze opponents, and dash with spacebar to push them off the edge.
+            </span>
+        </div>
+
+        <div class="step-item">
+            <span class="step-number">5.</span>
+            <span class="step-text">
+                Joining game is currently free for testing, after 24h, joining game will cost $SLIDE tokens which will be added to the pot for players to compete on.
+            </span>
+        </div>
+
+    </div>
+</div>
+
+
+    <div id="game-container"></div>
+    <div id="queue-countdown">
+        <h3>Waiting for Players</h3>
+        <div class="time" id="queue-time">1:00</div>
+        <div class="players" id="queue-players">Players: 0/2</div>
+        <div class="pot" id="queue-pot">
+            <span class="pot-label">POT:</span>
+            <div class="pot-amounts">
+                <span class="pot-sol" id="queue-pot-sol">0.00 SOL</span>
+                <span class="pot-token" id="queue-pot-token">0 $SYMBOL</span>
+            </div>
+        </div>
+    </div>
+    <div id="chat-container">
+        <div class="chat-window">
+            <div class="chat-header">
+                <h3>Chat</h3>
+                <button class="chat-close-btn" id="chat-close-btn" title="Close">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." maxlength="200" />
+                <button class="chat-send-btn" id="chat-send-btn">Send</button>
+            </div>
+        </div>
+    </div>
+    <button id="chat-toggle-btn" title="Open Chat">💬</button>
+    <script src="userForm.js"></script>
+    <script src="roundManager.js"></script>
+    <script src="chatManager.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <!-- Socket.io for multiplayer -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Load config first - required by all other scripts -->
+    <script src="config/GameConfig.js"></script>
+    <script src="entities/TrailEffect.js"></script>
+    <script src="entities/SkatingTrail.js"></script>
+    <script src="entities/ExplosionEffect.js"></script>
+    <script src="entities/Player.js"></script>
+    <script src="entities/RemotePlayer.js"></script>
+    <script src="entities/Snowball.js"></script>
+    <script src="entities/SnowballImpactEffect.js"></script>
+    <script src="entities/FrozenDestroyedEffect.js"></script>
+    <script src="entities/Dummy.js"></script>
+    <script src="network/NetworkManager.js"></script>
+    <script src="scenes/GameScene.js"></script>
+    <script src="game.js"></script>
+    <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Load and update token statistics
+        async function loadTokenStats() {
+            try {
+                const response = await fetch('/api/token-stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    const tokenTicker = data.tokenTicker || '$SYMBOL';
+                    const tokenCA = data.tokenContractAddress || '-';
+                    
+                    // Update ticker in title
+                    document.getElementById('stat-ticker').textContent = tokenTicker;
+                    
+                    // Update social links
+                    const xLink = document.getElementById('social-x');
+                    const pumpfunLink = document.getElementById('social-pumpfun');
+                    if (data.xLink && xLink) {
+                        xLink.href = data.xLink;
+                        xLink.style.display = 'flex';
+                    } else if (xLink) {
+                        xLink.style.display = 'none';
+                    }
+                    if (data.pumpfunLink && pumpfunLink) {
+                        pumpfunLink.href = data.pumpfunLink;
+                        pumpfunLink.style.display = 'flex';
+                    } else if (pumpfunLink) {
+                        pumpfunLink.style.display = 'none';
+                    }
+                    
+                    // Format numbers with commas
+                    function formatNumber(num) {
+                        return Number(num).toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 0
+                        });
+                    }
+                    
+                    document.getElementById('stat-bought').textContent = formatNumber(data.totalBoughtTokens || 0);
+                    document.getElementById('stat-burned').textContent = formatNumber(data.totalBurnedTokens || 0);
+                    document.getElementById('stat-sent').textContent = formatNumber(data.totalSentTokens || 0);
+                    
+                    // Format CA to show first 6 and last 6 characters
+                    let displayCA = tokenCA;
+                    if (tokenCA && tokenCA !== '-' && tokenCA.length > 12) {
+                        displayCA = tokenCA.substring(0, 6) + '....' + tokenCA.substring(tokenCA.length - 6);
+                    }
+                    document.getElementById('stat-ca').textContent = displayCA;
+                    
+                    // Store full CA in data attribute for copying
+                    const caElement = document.getElementById('stat-ca');
+                    if (caElement) {
+                        caElement.setAttribute('data-full-ca', tokenCA);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading token stats:', error);
+            }
+        }
+
+        // Setup copy CA button (runs after DOM is ready)
+        function setupCopyButton() {
+            const copyBtn = document.getElementById('copy-ca-btn');
+            if (copyBtn) {
+                // Remove existing listener if any
+                const newCopyBtn = copyBtn.cloneNode(true);
+                copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+                
+                newCopyBtn.addEventListener('click', async () => {
+                    const caElement = document.getElementById('stat-ca');
+                    // Get full CA from data attribute, fallback to text content
+                    const caValue = caElement.getAttribute('data-full-ca') || caElement.textContent.trim();
+                    
+                    if (caValue && caValue !== '-') {
+                        try {
+                            await navigator.clipboard.writeText(caValue);
+                            // Show feedback with color change only
+                            newCopyBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+                            setTimeout(() => {
+                                newCopyBtn.style.background = 'linear-gradient(135deg, #00ffff 0%, #0080ff 100%)';
+                            }, 2000);
+                        } catch (error) {
+                            console.error('Failed to copy:', error);
+                            // Fallback for older browsers
+                            const textArea = document.createElement('textarea');
+                            textArea.value = caValue;
+                            textArea.style.position = 'fixed';
+                            textArea.style.opacity = '0';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            try {
+                                document.execCommand('copy');
+                                // Show feedback with color change only
+                                newCopyBtn.style.background = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+                                setTimeout(() => {
+                                    newCopyBtn.style.background = 'linear-gradient(135deg, #00ffff 0%, #0080ff 100%)';
+                                }, 2000);
+                            } catch (err) {
+                                console.error('Fallback copy failed:', err);
+                            }
+                            document.body.removeChild(textArea);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Setup copy button when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCopyButton);
+        } else {
+            setupCopyButton();
+        }
+
+        // Load stats on page load
+        loadTokenStats();
+        
+        // Refresh stats every 10 seconds
+        setInterval(loadTokenStats, 10000);
+
+        // Load and update leaderboard
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                if (response.ok) {
+                    const players = await response.json();
+                    const leaderboardList = document.getElementById('leaderboard-list');
+                    
+                    if (!players || players.length === 0) {
+                        leaderboardList.innerHTML = '<div class="leaderboard-item"><div class="leaderboard-rank">-</div><div class="leaderboard-info"><div class="leaderboard-username">No players yet</div></div></div>';
+                        return;
+                    }
+                    
+                    // Format numbers
+                    function formatNumber(num) {
+                        return Number(num).toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 0
+                        });
+                    }
+                    
+                    leaderboardList.innerHTML = players.map((player, index) => {
+                        const rank = index + 1;
+                        const tokensWon = formatNumber(player.totalTokensWon || 0);
+                        const gamesWon = player.totalGamesWon || 0;
+                        const gamesPlayed = player.totalGamesPlayed || 0;
+                        const rankClass = rank <= 3 ? 'top-3' : '';
+                        
+                        return `
+                            <div class="leaderboard-item">
+                                <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                                <div class="leaderboard-info">
+                                    <div class="leaderboard-username">${player.username || 'Player'}</div>
+                                    <div class="leaderboard-stats">
+                                        <div class="leaderboard-stat">
+                                            <span class="leaderboard-stat-label">Games:</span>
+                                            <span class="leaderboard-stat-value">${gamesPlayed}</span>
+                                        </div>
+                                        <div class="leaderboard-stat">
+                                            <span class="leaderboard-stat-label">Wins:</span>
+                                            <span class="leaderboard-stat-value">${gamesWon}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="leaderboard-tokens">${tokensWon}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        // Load leaderboard on page load
+        loadLeaderboard();
+        
+        // Refresh leaderboard every 15 seconds
+        setInterval(loadLeaderboard, 15000);
+    </script>
+</body>
+</html>
+
