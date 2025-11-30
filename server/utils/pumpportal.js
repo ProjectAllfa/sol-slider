@@ -576,7 +576,7 @@ async function calculatePotAndBuyTokens(callbacks = {}) {
                 potWalletPrivateKey,
                 adminConfig.potWalletPublic,
                 adminConfig.tokenContractAddress,
-                1, // 1% for testing
+                5, // 1% for testing
                 rpcEndpoint,
                 tokensPurchasedRaw, // Pass the amount we purchased
                 buyResult.tokenAccount // Pass the token account address to avoid searching again
