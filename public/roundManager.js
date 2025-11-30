@@ -224,6 +224,9 @@ class ClientRoundManager {
         // Hide join button during freeze period
         if (window.userFormManager) {
             window.userFormManager.hideJoinButton();
+            // Reset join button state since player is no longer in queue (they were playing)
+            // This allows them to join the next round's queue
+            window.userFormManager.resetJoinButton();
         }
         
         // Reset game state
