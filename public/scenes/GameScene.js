@@ -5,6 +5,16 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        // Set up loading screen progress tracking
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingBar = document.querySelector('.loading-bar');
+        
+        if (loadingBar) {
+            this.load.on('progress', (value) => {
+                loadingBar.style.width = (value * 100) + '%';
+            });
+        }
+        
         // Load ice tile for background
         this.load.image('ice_tile', 'assets/map/ice_tile.png');
         
@@ -109,6 +119,20 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // Hide loading screen when assets are loaded
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                // Remove from DOM after fade out
+                setTimeout(() => {
+                    if (loadingScreen && loadingScreen.parentNode) {
+                        loadingScreen.parentNode.removeChild(loadingScreen);
+                    }
+                }, 500);
+            }, 300);
+        }
+        
         // IMPORTANT: Set world bounds FIRST, before creating any physics bodies
         // This ensures consistent boundaries for all players (multiplayer requirement)
         // World bounds must match server-side bounds exactly (1280x720)
