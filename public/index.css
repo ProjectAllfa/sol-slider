@@ -178,7 +178,7 @@ html, body {
     align-items: center;
 }
 
-.user-button, .join-button {
+.user-button, .toggle-ui-button, .join-button {
     border: none;
     border-radius: 6px;
     font-weight: bold;
@@ -201,11 +201,30 @@ html, body {
     font-size: 20px;
 }
 
+.toggle-ui-button {
+    background: linear-gradient(135deg, #666666 0%, #444444 100%);
+    color: #ffffff;
+    width: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    font-size: 20px;
+}
+
 .join-button {
     padding: 10px 12px;
 }
 
 .user-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #777777 0%, #555555 100%);
+}
+
+.toggle-ui-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.4);
@@ -1121,12 +1140,17 @@ html, body {
         gap: 8px;
     }
 
-    .user-button, .join-button {
+    .user-button, .toggle-ui-button, .join-button {
         font-size: 0.5rem;
         height: 40px;
     }
 
     .user-button {
+        width: 40px;
+        font-size: 0.7rem;
+    }
+
+    .toggle-ui-button {
         width: 40px;
         font-size: 0.7rem;
     }

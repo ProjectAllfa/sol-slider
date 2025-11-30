@@ -56,7 +56,7 @@ const GameConfig = {
     // Snowball mechanics
     SNOWBALL_SPEED: 600, // Speed of snowball in pixels per second
     SNOWBALL_RADIUS: 8, // Collision radius of snowball
-    SNOWBALL_COOLDOWN: 1000, // Cooldown between throws in milliseconds
+    SNOWBALL_COOLDOWN: 3000, // Cooldown between throws in milliseconds
     SNOWBALL_FREEZE_DURATION: 3000 // Freeze duration in milliseconds (3 seconds)
 };
 

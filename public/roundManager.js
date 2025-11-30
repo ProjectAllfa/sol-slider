@@ -9,6 +9,7 @@ class ClientRoundManager {
         this.aliveCount = 0;
         this.currentRound = 0;
         this.isGameEnding = false; // Flag to prevent showing queue during 5s freeze
+        this.shouldAutoOpenChat = false; // Flag to auto-open chat after game ends
         
         // UI elements
         this.queueContainer = document.getElementById('queue-countdown');
@@ -68,6 +69,8 @@ class ClientRoundManager {
         if (this.isGameEnding && state.timeRemaining >= 59000) {
             // Queue has been reset to full duration (1 minute = 60000ms, allow some tolerance)
             this.isGameEnding = false;
+            // Set flag to auto-open chat when UI elements are shown
+            this.shouldAutoOpenChat = true;
         }
         
         // Show queue whenever we're not in an active game AND not in the 5s freeze period
@@ -103,21 +106,43 @@ class ClientRoundManager {
                     }
                 }
             }
-            // Show token statistics during queue
+            // Show token statistics during queue (if user hasn't hidden them)
             if (this.tokenStatsContainer) {
-                this.tokenStatsContainer.classList.add('active');
+                const shouldShow = !window.userFormManager || window.userFormManager.uiElementsVisible;
+                if (shouldShow) {
+                    this.tokenStatsContainer.classList.add('active');
+                }
             }
-            // Show leaderboard during queue
+            // Show leaderboard during queue (if user hasn't hidden them)
             if (this.leaderboardContainer) {
-                this.leaderboardContainer.classList.add('active');
+                const shouldShow = !window.userFormManager || window.userFormManager.uiElementsVisible;
+                if (shouldShow) {
+                    this.leaderboardContainer.classList.add('active');
+                }
             }
-            // Show how it works during queue
+            // Show how it works during queue (if user hasn't hidden them)
             if (this.howItWorksContainer) {
-                this.howItWorksContainer.classList.add('active');
+                const shouldShow = !window.userFormManager || window.userFormManager.uiElementsVisible;
+                if (shouldShow) {
+                    this.howItWorksContainer.classList.add('active');
+                }
             }
             // Show join button during queue
             if (window.userFormManager) {
                 window.userFormManager.showJoinButtonContainer();
+            }
+            
+            // Automatically open chat when UI elements are shown after game ends
+            // Only open if chat is not already visible and we should auto-open
+            if (this.shouldAutoOpenChat && window.chatManager && !window.chatManager.isGameActive && !window.chatManager.isVisible) {
+                // Small delay to ensure UI elements are fully visible
+                setTimeout(() => {
+                    if (window.chatManager && !window.chatManager.isGameActive && !window.chatManager.isVisible) {
+                        window.chatManager.openChat();
+                    }
+                }, 100);
+                // Clear flag so we don't try to open again
+                this.shouldAutoOpenChat = false;
             }
         } else {
             // Hide queue countdown when game is active or during freeze

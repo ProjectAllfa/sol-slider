@@ -6,6 +6,7 @@ class UserFormManager {
         this.formContainer = null;
         this.joinButtonContainer = null;
         this.isJoined = false;
+        this.uiElementsVisible = this.loadUIElementsVisibility(); // Load saved state
     }
 
     // Get existing clientId from localStorage or create a new one
@@ -202,9 +203,14 @@ class UserFormManager {
         // User icon button (SVG icon)
         const userIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
         
+        // Eye icon button (SVG icon) - eye open and eye closed
+        const eyeOpenIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+        const eyeClosedIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+        
         this.joinButtonContainer.innerHTML = `
             <div class="join-button-box">
                 <button type="button" id="user-btn" class="user-button" title="${this.userData ? 'Change User' : 'Add User'}">${userIcon}</button>
+                <button type="button" id="toggle-ui-btn" class="toggle-ui-button" title="${this.uiElementsVisible ? 'Hide UI Elements' : 'Show UI Elements'}">${this.uiElementsVisible ? eyeOpenIcon : eyeClosedIcon}</button>
                 <button type="button" id="join-btn" class="join-button">Join Next Round</button>
             </div>
         `;
@@ -218,6 +224,12 @@ class UserFormManager {
             if (!this.formContainer || !this.formContainer.parentElement) {
                 this.showForm();
             }
+        });
+
+        // Handle toggle UI button (Hide/Show UI elements)
+        const toggleUiBtn = document.getElementById('toggle-ui-btn');
+        toggleUiBtn.addEventListener('click', () => {
+            this.toggleUIElements();
         });
 
         // Handle join button
@@ -355,12 +367,82 @@ class UserFormManager {
             this.joinButtonContainer.style.display = 'none';
         }
         
+        // Apply saved UI elements visibility state
+        this.applyUIElementsVisibility();
+        
         // Don't show form automatically - it will appear when user clicks buttons
     }
 
     // Get current user data
     getUserData() {
         return this.userData;
+    }
+
+    // Load UI elements visibility state from localStorage
+    loadUIElementsVisibility() {
+        const saved = localStorage.getItem('uiElementsVisible');
+        return saved !== null ? saved === 'true' : true; // Default to visible
+    }
+
+    // Save UI elements visibility state to localStorage
+    saveUIElementsVisibility(visible) {
+        localStorage.setItem('uiElementsVisible', visible.toString());
+    }
+
+    // Toggle visibility of UI elements (token stats, leaderboard, how it works)
+    toggleUIElements() {
+        this.uiElementsVisible = !this.uiElementsVisible;
+        this.saveUIElementsVisibility(this.uiElementsVisible);
+        
+        // Get UI elements
+        const tokenStats = document.getElementById('token-stats');
+        const leaderboard = document.getElementById('leaderboard');
+        const howItWorks = document.getElementById('how-it-works');
+        
+        // Toggle visibility - use inline style to override CSS classes
+        if (tokenStats) {
+            if (this.uiElementsVisible) {
+                tokenStats.style.display = ''; // Remove inline style to allow CSS to control
+            } else {
+                tokenStats.style.display = 'none'; // Force hide with inline style
+            }
+        }
+        if (leaderboard) {
+            if (this.uiElementsVisible) {
+                leaderboard.style.display = ''; // Remove inline style to allow CSS to control
+            } else {
+                leaderboard.style.display = 'none'; // Force hide with inline style
+            }
+        }
+        if (howItWorks) {
+            if (this.uiElementsVisible) {
+                howItWorks.style.display = ''; // Remove inline style to allow CSS to control
+            } else {
+                howItWorks.style.display = 'none'; // Force hide with inline style
+            }
+        }
+        
+        // Update button icon and title
+        const toggleUiBtn = document.getElementById('toggle-ui-btn');
+        if (toggleUiBtn) {
+            const eyeOpenIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+            const eyeClosedIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+            toggleUiBtn.innerHTML = this.uiElementsVisible ? eyeOpenIcon : eyeClosedIcon;
+            toggleUiBtn.title = this.uiElementsVisible ? 'Hide UI Elements' : 'Show UI Elements';
+        }
+    }
+
+    // Apply UI elements visibility on initialization
+    applyUIElementsVisibility() {
+        const tokenStats = document.getElementById('token-stats');
+        const leaderboard = document.getElementById('leaderboard');
+        const howItWorks = document.getElementById('how-it-works');
+        
+        if (!this.uiElementsVisible) {
+            if (tokenStats) tokenStats.style.display = 'none';
+            if (leaderboard) leaderboard.style.display = 'none';
+            if (howItWorks) howItWorks.style.display = 'none';
+        }
     }
 }
 
